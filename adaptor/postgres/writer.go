@@ -11,6 +11,7 @@ import (
 	"github.com/compose/transporter/log"
 	"github.com/compose/transporter/message"
 	"github.com/compose/transporter/message/ops"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var _ client.Writer = &Writer{}
@@ -60,7 +61,7 @@ func insertMsg(m message.Msg, s *sql.DB) error {
 
 	i := 1
 	for key, value := range m.Data() {
-		keys = append(keys, key)
+		keys = append(keys, fmt.Sprintf("\"%v\"", key))
 		placeholders = append(placeholders, fmt.Sprintf("$%v", i))
 
 		switch value.(type) {
@@ -70,6 +71,8 @@ func insertMsg(m message.Msg, s *sql.DB) error {
 			value, _ = json.Marshal(value)
 			value = string(value.([]byte))
 			value = fmt.Sprintf("{%v}", value.(string)[1:len(value.(string))-1])
+		case bson.ObjectId:
+			value = value.(bson.ObjectId).Hex()
 		}
 		data = append(data, value)
 
@@ -94,7 +97,7 @@ func deleteMsg(m message.Msg, s *sql.DB) error {
 	i := 1
 	for key, value := range m.Data() {
 		if pkeys[key] { // key is primary key
-			ckeys = append(ckeys, fmt.Sprintf("%v = $%v", key, i))
+			ckeys = append(ckeys, fmt.Sprintf("\"%v\" = $%v", key, i))
 		}
 		switch value.(type) {
 		case map[string]interface{}, mejson.M, []map[string]interface{}, mejson.S:
@@ -103,6 +106,8 @@ func deleteMsg(m message.Msg, s *sql.DB) error {
 			value, _ = json.Marshal(value)
 			value = string(value.([]byte))
 			value = fmt.Sprintf("{%v}", value.(string)[1:len(value.(string))-1])
+		case bson.ObjectId:
+			value = value.(bson.ObjectId).Hex()
 		}
 		vals = append(vals, value)
 		i = i + 1
@@ -133,9 +138,9 @@ func updateMsg(m message.Msg, s *sql.DB) error {
 	i := 1
 	for key, value := range m.Data() {
 		if pkeys[key] { // key is primary key
-			ckeys = append(ckeys, fmt.Sprintf("%v=$%v", key, i))
+			ckeys = append(ckeys, fmt.Sprintf("\"%v\"=$%v", key, i))
 		} else {
-			ukeys = append(ukeys, fmt.Sprintf("%v=$%v", key, i))
+			ukeys = append(ukeys, fmt.Sprintf("\"%v\"=$%v", key, i))
 		}
 
 		switch value.(type) {
@@ -145,6 +150,8 @@ func updateMsg(m message.Msg, s *sql.DB) error {
 			value, _ = json.Marshal(value)
 			value = string(value.([]byte))
 			value = fmt.Sprintf("{%v}", value.(string)[1:len(value.(string))-1])
+		case bson.ObjectId:
+			value = value.(bson.ObjectId).Hex()
 		}
 		vals = append(vals, value)
 		i = i + 1

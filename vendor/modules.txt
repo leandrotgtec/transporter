@@ -1,0 +1,141 @@
+# github.com/bitly/go-hostpool v0.1.0
+## explicit; go 1.13
+# github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869
+## explicit
+# github.com/cenkalti/backoff v0.0.0-20150522193654-6c45d6bc1e78
+## explicit
+github.com/cenkalti/backoff
+# github.com/compose/mejson v0.0.0-20150828131556-afcf51c7c640
+## explicit
+github.com/compose/mejson
+# github.com/dlclark/regexp2 v1.1.6
+## explicit
+github.com/dlclark/regexp2
+github.com/dlclark/regexp2/syntax
+# github.com/dop251/goja v0.0.0-20170430194003-d382686fd20b
+## explicit
+github.com/dop251/goja
+github.com/dop251/goja/ast
+github.com/dop251/goja/file
+github.com/dop251/goja/parser
+github.com/dop251/goja/token
+# github.com/fortytw2/leaktest v1.3.0
+## explicit
+# github.com/golang/protobuf v0.0.0-20150526012109-34a5f244f1c0
+## explicit
+github.com/golang/protobuf/proto
+# github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed
+## explicit
+github.com/hailocab/go-hostpool
+# github.com/hashicorp/go-version v0.0.0-20161031182605-e96d38404026
+## explicit
+github.com/hashicorp/go-version
+# github.com/lib/pq v1.10.2
+## explicit; go 1.13
+github.com/lib/pq
+github.com/lib/pq/oid
+github.com/lib/pq/scram
+# github.com/mailru/easyjson v0.0.0-20171120080333-32fa128f234d
+## explicit
+github.com/mailru/easyjson
+github.com/mailru/easyjson/buffer
+github.com/mailru/easyjson/jlexer
+github.com/mailru/easyjson/jwriter
+# github.com/mattn/go-runewidth v0.0.2
+## explicit
+github.com/mattn/go-runewidth
+# github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
+## explicit
+github.com/nu7hatch/gouuid
+# github.com/oklog/run v1.0.0
+## explicit
+github.com/oklog/run
+# github.com/olekukonko/tablewriter v0.0.0-20170128050532-febf2d34b54a
+## explicit
+github.com/olekukonko/tablewriter
+# github.com/pkg/errors v0.8.0
+## explicit
+github.com/pkg/errors
+# github.com/robertkrimen/otto v0.0.0-20171130103205-3b44b4dcb6c0
+## explicit
+github.com/robertkrimen/otto
+github.com/robertkrimen/otto/ast
+github.com/robertkrimen/otto/dbg
+github.com/robertkrimen/otto/file
+github.com/robertkrimen/otto/parser
+github.com/robertkrimen/otto/registry
+github.com/robertkrimen/otto/token
+github.com/robertkrimen/otto/underscore
+# github.com/sirupsen/logrus v1.0.4
+## explicit
+github.com/sirupsen/logrus
+# github.com/smartystreets/go-aws-auth v0.0.0-20160722044803-2043e6d0bb7e
+## explicit
+github.com/smartystreets/go-aws-auth
+# github.com/smartystreets/goconvey v1.6.4
+## explicit
+# github.com/streadway/amqp v0.0.0-20150320153439-6a378341a305
+## explicit
+github.com/streadway/amqp
+# github.com/stretchr/testify v1.7.0
+## explicit; go 1.13
+# golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
+## explicit
+golang.org/x/crypto/pbkdf2
+golang.org/x/crypto/ssh/terminal
+# golang.org/x/net v0.0.0-20190311183353-d8887717615a
+## explicit
+golang.org/x/net/context
+# golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a
+## explicit
+golang.org/x/sys/unix
+golang.org/x/sys/windows
+# golang.org/x/text v0.3.0
+## explicit
+golang.org/x/text/cases
+golang.org/x/text/collate
+golang.org/x/text/internal
+golang.org/x/text/internal/colltab
+golang.org/x/text/internal/tag
+golang.org/x/text/language
+golang.org/x/text/transform
+golang.org/x/text/unicode/norm
+# gopkg.in/airbrake/gobrake.v2 v2.0.9
+## explicit
+# gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
+## explicit; go 1.11
+# gopkg.in/fatih/pool.v2 v2.0.0-20160721145410-20a0a429c5f9
+## explicit
+gopkg.in/fatih/pool.v2
+# gopkg.in/gemnasium/logrus-airbrake-hook.v2 v2.1.2
+## explicit
+# gopkg.in/gorethink/gorethink.v3 v3.0.5
+## explicit
+gopkg.in/gorethink/gorethink.v3
+gopkg.in/gorethink/gorethink.v3/encoding
+gopkg.in/gorethink/gorethink.v3/ql2
+gopkg.in/gorethink/gorethink.v3/types
+# gopkg.in/mgo.v2 v2.0.0-20160818020120-3f83fa500528
+## explicit
+gopkg.in/mgo.v2
+gopkg.in/mgo.v2/bson
+gopkg.in/mgo.v2/internal/json
+gopkg.in/mgo.v2/internal/sasl
+gopkg.in/mgo.v2/internal/scram
+# gopkg.in/olivere/elastic.v2 v2.0.1-0.20180214101641-ad2886760fe8
+## explicit
+gopkg.in/olivere/elastic.v2
+# gopkg.in/olivere/elastic.v3 v3.0.42-0.20180214101641-ad2886760fe8
+## explicit
+gopkg.in/olivere/elastic.v3
+# gopkg.in/olivere/elastic.v5 v5.0.64
+## explicit
+gopkg.in/olivere/elastic.v5
+gopkg.in/olivere/elastic.v5/config
+gopkg.in/olivere/elastic.v5/uritemplates
+# gopkg.in/sourcemap.v1 v1.0.3
+## explicit
+gopkg.in/sourcemap.v1
+gopkg.in/sourcemap.v1/base64vlq
+# gopkg.in/yaml.v2 v2.4.0
+## explicit; go 1.15
