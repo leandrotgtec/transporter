@@ -18,4 +18,6 @@ var sink = postgres({
   // "replication_slot": "slot"
 })
 
-t.Source("mongo", source, "/^crushings$/").Save("postgres", sink, "/.*/")
+//t.Source("mongo", source, "/breaks|fronts|geocercas|journeys|machine|operators|silos|users/").Save("postgres", sink, "/.*/")
+t.Source("mongo", source, "/users/").Save("postgres", sink, "/.*/")
+

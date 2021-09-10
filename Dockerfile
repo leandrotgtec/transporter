@@ -1,4 +1,4 @@
-FROM golang:1.9 as builder
+FROM golang:1.17-alpine as builder
 
 # Setting up working directory
 ADD . /go/src/github.com/compose/transporter/
@@ -13,6 +13,7 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 
 COPY --from=builder /go/src/github.com/compose/transporter/transporter /usr/local/bin/
+COPY pipeline.js /usr/local/bin/
 
 # Alpine Linux doesn't use pam, which means that there is no /etc/nsswitch.conf,
 # but Golang relies on /etc/nsswitch.conf to check the order of DNS resolving
@@ -20,4 +21,4 @@ COPY --from=builder /go/src/github.com/compose/transporter/transporter /usr/loca
 # To fix this we just create /etc/nsswitch.conf and add the following line:
 RUN echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf
 
-CMD ["/usr/local/bin/transporter"]
+ENTRYPOINT ["/usr/local/bin/transporter", "run", "/usr/local/bin/pipeline.js"]
