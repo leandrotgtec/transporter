@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/compose/mejson"
@@ -11,9 +12,11 @@ import (
 	"github.com/compose/transporter/log"
 	"github.com/compose/transporter/message"
 	"github.com/compose/transporter/message/ops"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var _ client.Writer = &Writer{}
+var schema = os.Getenv("SCHEMA")
 
 // Writer implements client.Writer for use with MongoDB
 type Writer struct {
@@ -51,7 +54,8 @@ func (w *Writer) Write(msg message.Msg) func(client.Session) (message.Msg, error
 }
 
 func insertMsg(m message.Msg, s *sql.DB) error {
-	log.With("table", m.Namespace()).Debugln("INSERT")
+	log.With("table", m.Namespace()).With("schema", schema).Debugln("INSERT")
+
 	var (
 		keys         []string
 		placeholders []string
@@ -60,29 +64,35 @@ func insertMsg(m message.Msg, s *sql.DB) error {
 
 	i := 1
 	for key, value := range m.Data() {
-		keys = append(keys, key)
+		if key == "password" || key == "salt" {
+			continue
+		}
+
+		keys = append(keys, fmt.Sprintf("\"%v\"", key))
 		placeholders = append(placeholders, fmt.Sprintf("$%v", i))
 
 		switch value.(type) {
-		case map[string]interface{}, mejson.M, []map[string]interface{}, mejson.S:
+		case map[string]interface{}, mejson.M, []map[string]interface{}, mejson.S, bson.M:
 			value, _ = json.Marshal(value)
 		case []interface{}:
 			value, _ = json.Marshal(value)
 			value = string(value.([]byte))
 			value = fmt.Sprintf("{%v}", value.(string)[1:len(value.(string))-1])
+		case bson.ObjectId:
+			value = value.(bson.ObjectId).Hex()
 		}
 		data = append(data, value)
-
+		//log.With("i", i).With("key", key).With("value", value).Debugln("INSERT")
 		i = i + 1
 	}
 
-	query := fmt.Sprintf("INSERT INTO %v (%v) VALUES (%v);", m.Namespace(), strings.Join(keys, ", "), strings.Join(placeholders, ", "))
+	query := fmt.Sprintf("INSERT INTO \"%v\".%v (%v) VALUES (%v);", schema, m.Namespace(), strings.Join(keys, ", "), strings.Join(placeholders, ", "))
 	_, err := s.Exec(query, data...)
 	return err
 }
 
 func deleteMsg(m message.Msg, s *sql.DB) error {
-	log.With("table", m.Namespace()).With("values", m.Data()).Debugln("DELETE")
+	log.With("table", m.Namespace()).With("schema", schema).With("values", m.Data()).Debugln("DELETE")
 	var (
 		ckeys []string
 		vals  []interface{}
@@ -93,16 +103,22 @@ func deleteMsg(m message.Msg, s *sql.DB) error {
 	}
 	i := 1
 	for key, value := range m.Data() {
+		if key == "password" || key == "salt" {
+			continue
+		}
+
 		if pkeys[key] { // key is primary key
-			ckeys = append(ckeys, fmt.Sprintf("%v = $%v", key, i))
+			ckeys = append(ckeys, fmt.Sprintf("\"%v\" = $%v", key, i))
 		}
 		switch value.(type) {
-		case map[string]interface{}, mejson.M, []map[string]interface{}, mejson.S:
+		case map[string]interface{}, mejson.M, []map[string]interface{}, mejson.S, bson.M:
 			value, _ = json.Marshal(value)
 		case []interface{}:
 			value, _ = json.Marshal(value)
 			value = string(value.([]byte))
 			value = fmt.Sprintf("{%v}", value.(string)[1:len(value.(string))-1])
+		case bson.ObjectId:
+			value = value.(bson.ObjectId).Hex()
 		}
 		vals = append(vals, value)
 		i = i + 1
@@ -112,13 +128,13 @@ func deleteMsg(m message.Msg, s *sql.DB) error {
 		return fmt.Errorf("All primary keys were not accounted for. Provided: %v; Required; %v", ckeys, pkeys)
 	}
 
-	query := fmt.Sprintf("DELETE FROM %v WHERE %v;", m.Namespace(), strings.Join(ckeys, " AND "))
+	query := fmt.Sprintf("DELETE FROM \"%v\".%v WHERE %v;", schema, m.Namespace(), strings.Join(ckeys, " AND "))
 	_, err = s.Exec(query, vals...)
 	return err
 }
 
 func updateMsg(m message.Msg, s *sql.DB) error {
-	log.With("table", m.Namespace()).Debugln("UPDATE")
+	log.With("table", m.Namespace()).With("schema", schema).Debugln("UPDATE")
 	var (
 		ckeys []string
 		ukeys []string
@@ -132,19 +148,25 @@ func updateMsg(m message.Msg, s *sql.DB) error {
 
 	i := 1
 	for key, value := range m.Data() {
+		if key == "password" || key == "salt" {
+			continue
+		}
+
 		if pkeys[key] { // key is primary key
-			ckeys = append(ckeys, fmt.Sprintf("%v=$%v", key, i))
+			ckeys = append(ckeys, fmt.Sprintf("\"%v\"=$%v", key, i))
 		} else {
-			ukeys = append(ukeys, fmt.Sprintf("%v=$%v", key, i))
+			ukeys = append(ukeys, fmt.Sprintf("\"%v\"=$%v", key, i))
 		}
 
 		switch value.(type) {
-		case map[string]interface{}, mejson.M, []map[string]interface{}, mejson.S:
+		case map[string]interface{}, mejson.M, []map[string]interface{}, mejson.S, bson.M:
 			value, _ = json.Marshal(value)
 		case []interface{}:
 			value, _ = json.Marshal(value)
 			value = string(value.([]byte))
 			value = fmt.Sprintf("{%v}", value.(string)[1:len(value.(string))-1])
+		case bson.ObjectId:
+			value = value.(bson.ObjectId).Hex()
 		}
 		vals = append(vals, value)
 		i = i + 1
@@ -154,7 +176,7 @@ func updateMsg(m message.Msg, s *sql.DB) error {
 		return fmt.Errorf("All primary keys were not accounted for. Provided: %v; Required; %v", ckeys, pkeys)
 	}
 
-	query := fmt.Sprintf("UPDATE %v SET %v WHERE %v;", m.Namespace(), strings.Join(ukeys, ", "), strings.Join(ckeys, " AND "))
+	query := fmt.Sprintf("UPDATE \"%v\".%v SET %v WHERE %v;", schema, m.Namespace(), strings.Join(ukeys, ", "), strings.Join(ckeys, " AND "))
 	_, err = s.Exec(query, vals...)
 	return err
 }

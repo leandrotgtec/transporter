@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:
+  transporter:
+    image: leandrotgtec/transporter
+    environment:
+      SCHEMA: mizu-clone
+      MONGODB_URI: mongodb://host.docker.internal/t2-cn
+      POSTGRESQL_URI: postgres://postgres:1234@host.docker.internal:5432/postgres?sslmode=disable
+      COLLECTIONS: breaks|fronts|geocercas|journeys|machine|operators|silos|users
+      TAIL: false
